@@ -1,0 +1,50 @@
+1. download latest arduino
+2. add 49-micronucleus.rules file to /etc/udev/rules.d:
+phobos@Phobos-PC:/etc/udev/rules.d$ cat 49-micronucleus.rules 
+# UDEV Rules for Micronucleus boards including the Digispark.
+# This file must be placed at:
+#
+# /etc/udev/rules.d/49-micronucleus.rules    (preferred location)
+#   or
+# /lib/udev/rules.d/49-micronucleus.rules    (req'd on some broken systems)
+#
+# After this file is copied, physically unplug and reconnect the board.
+#
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="16d0", ATTRS{idProduct}=="0753", MODE:="0666"
+KERNEL=="ttyACM*", ATTRS{idVendor}=="16d0", ATTRS{idProduct}=="0753", MODE:="0666", ENV{ID_MM_DEVICE_IGNORE}="1"
+#
+# If you share your linux system with other users, or just don't like the
+# idea of write permission for everybody, you can replace MODE:="0666" with
+# OWNER:="yourusername" to create the device owned by you, or with
+# GROUP:="somegroupname" and mange access using standard unix groups.
+
+3. restart rules:
+sudo udevadm control --reload-rules
+
+4. Install micronucleus driver:
+sudo apt-get install lib32stdc++6
+
+5. Follow this tutorial:
+http://digistump.com/wiki/digispark/tutorials/connecting
+
+6. Install fastled:
+cd ~/Arduino/libraries
+git clone https://github.com/FastLED/FastLED.git
+
+7. now onto programmig attiny85:
+download the bootloader hex (I've used t85_default - https://github.com/micronucleus/micronucleus/blob/master/firmware/releases/t85_default.hex) and place it here:
+cd ~/Arduino/hardware/tools/avr
+sudo ./bin/avrdude -C etc/avrdude.conf -c usbasp -p t85 -U flash:w:t85_default.hex -U lfuse:w:0xe1:m -U hfuse:w:0xdd:m -U efuse:w:0xfe:m
+
+5 Data I/O Pins (reset Pin enabled) [Recommended]
+-U lfuse:w:0xe1:m -U hfuse:w:0xdd:m -U efuse:w:0xfe:m
+
+OR 6 Data I/O Pins (reset Pin disabled)
+-U lfuse:w:0xe1:m -U hfuse:w:0x5d:m -U efuse:w:0xfe:m
+
+8. If you're getting an error you need to compile the latest micronucleus flashing tool:
+sudo apt-get install libusb-dev
+git clone git@github.com:micronucleus/micronucleus
+micronucleus-master/commandline$ make
+copy executable here:
+cd ~/.arduino15/packages/digistump/tools/micronucleus
