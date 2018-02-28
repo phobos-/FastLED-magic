@@ -42,9 +42,8 @@ void loop () {
     nblendPaletteTowardPalette(currentPalette, targetPalette, maxChanges);
   }
 
-  EVERY_N_SECONDS(5) {                                        // Change the target palette to a random one every 5 seconds.
-    static uint8_t baseC = random8();                         // You can use this as a baseline colour if you want similar hues in the next line.
-    targetPalette = CRGBPalette16(CHSV(random8(), 255, random8(128,255)), CHSV(random8(), 255, random8(128,255)), CHSV(random8(), 192, random8(128,255)), CHSV(random8(), 255, random8(128,255)));
+  EVERY_N_MILLISECONDS(5*1000) {                              // Change the target palette to a random one every 5 seconds.
+    targetPalette = CRGBPalette16(CHSV(random8(), 255, random8()), CHSV(random8(), 255, random8()), CHSV(random8(), 192, random8()), CHSV(random8(), 255, random8()));
   }
   
   FastLED.show();
